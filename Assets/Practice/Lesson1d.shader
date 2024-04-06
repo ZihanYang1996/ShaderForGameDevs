@@ -1,4 +1,4 @@
-Shader "Practice/Lesson1abc"
+Shader "Practice/Lesson1d"
 {
     Properties
     {
