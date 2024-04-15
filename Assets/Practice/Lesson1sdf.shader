@@ -57,7 +57,15 @@ Shader "Practice/Lesson1sdf"
 
             fixed4 frag (v2f i) : SV_Target
             {
+                // rounded corner clipping
+                float2 coords = i.uv;
+                coords.x *= 8;
 
+                float2 pointOnLineSeg = float2(clamp(coords.x, 0.5, 7.5), 0.5);
+                float sdf = distance(coords, pointOnLineSeg) * 2 - 1;
+                clip(-sdf);  // clip function returns 0 if sdf is negative, 1 otherwise
+
+                // return float4(sdf.xxx, 1);
                 float3 healthbarColor = tex2D(_MainTex, float2(_Health, i.uv.y));
                 float healthbarMask = _Health > i.uv.x;
 
