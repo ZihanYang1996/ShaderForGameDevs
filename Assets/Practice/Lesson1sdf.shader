@@ -4,6 +4,7 @@ Shader "Practice/Lesson1sdf"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Health ("Health", Range(0, 1)) = 1
+        _BoarderSize ("BoarderSize", Range(0, 0.5)) = 0.1
     }
     SubShader
     {
@@ -40,6 +41,7 @@ Shader "Practice/Lesson1sdf"
 
             sampler2D _MainTex;
             float _Health;
+            float _BoarderSize;
 
             v2f vert (appdata v)
             {
@@ -64,6 +66,19 @@ Shader "Practice/Lesson1sdf"
                 float2 pointOnLineSeg = float2(clamp(coords.x, 0.5, 7.5), 0.5);
                 float sdf = distance(coords, pointOnLineSeg) * 2 - 1;
                 clip(-sdf);  // clip function returns 0 if sdf is negative, 1 otherwise
+                
+                // Add border
+                float borderSdf = sdf + _BoarderSize;
+
+                float pd = fwidth(borderSdf);  // screen-space partial derivative
+
+                // borderMask is 0 at the border, 1 at the center of the healthbar
+                // float borderMask = step(0, -borderSdf);
+                float borderMask = 1- saturate(borderSdf / pd);  // Anti-aliasing
+
+
+                // return float4(borderMask.xxx, 1);
+
 
                 // return float4(sdf.xxx, 1);
                 float3 healthbarColor = tex2D(_MainTex, float2(_Health, i.uv.y));
@@ -78,7 +93,7 @@ Shader "Practice/Lesson1sdf"
                 }
                 
 
-                return float4(healthbarColor * healthbarMask, healthbarMask);
+                return float4(healthbarColor * healthbarMask * borderMask, healthbarMask);
             }
             ENDCG
         }
