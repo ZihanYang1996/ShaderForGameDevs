@@ -79,8 +79,9 @@ Shader "Practice/Lighting"
                 float3 specularLight = saturate(dot(N, H)) * (lambert > 0);  // Remove the 'spotlight' effect when the light is behind the object
                 specularLight = pow(specularLight, specularExponent);  // Glossiness, specular exponent
 
+                specularLight = specularLight * _LightColor0.rgb;
 
-                return float4(specularLight.xxx, 1);
+                return float4(specularLight, 1);
                 return float4(diffuseLight, 1.0);
             }
             ENDCG
