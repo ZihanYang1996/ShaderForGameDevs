@@ -4,6 +4,7 @@ Shader "Practice/Lighting"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Gloss ("Gloss", Range(0, 1)) = 0.5
+        _Color ("Color", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
@@ -37,6 +38,7 @@ Shader "Practice/Lighting"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _Gloss;
+            float4 _Color;
 
             v2f vert (appdata v)
             {
@@ -82,7 +84,7 @@ Shader "Practice/Lighting"
 
                 specularLight = specularLight * _LightColor0.rgb;  // Apply light color
 
-                return float4(specularLight + diffuseLight, 1);
+                return float4(specularLight + diffuseLight * _Color, 1);
                 
             }
             ENDCG
