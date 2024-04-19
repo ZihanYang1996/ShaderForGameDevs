@@ -3,7 +3,7 @@ Shader "Practice/Lighting"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Gloss ("Gloss", float) = 0.5
+        _Gloss ("Gloss", Range(0, 1)) = 0.5
     }
     SubShader
     {
@@ -56,15 +56,29 @@ Shader "Practice/Lighting"
                 float3 L = _WorldSpaceLightPos0.xyz;  // Point to the directional light
                 // Lambertian reflection
                 // max(0.0, dot(N,L)) is the same
-                // float diffuseLight = saturate(dot(N,L));  
-                float3 diffuseLight = saturate(dot(N,L)) * _LightColor0.rgb;
+                float lambert = saturate(dot(N,L));  
+                float3 diffuseLight = lambert * _LightColor0.rgb;
 
-                // Specular lighting
+                // Specular Exponent
+                float specularExponent = exp2(_Gloss * 6) + 2;  // For optimization, put it in C# scripta
+
+
+                // // Specular lighting, Phong
+                // // Get view vector
+                // float3 V = normalize(_WorldSpaceCameraPos - i.wPos);  // Point to the camera from the fragment
+                // float3 R = reflect(-L, N);  // Reflect the light vector around the normal
+                // float3 specularLight = saturate(dot(V, R));
+                // specularLight = pow(specularLight, specularExponent);  // Glossiness, specular exponent
+
+
+                // Specular lighting, Blinn-Phong
                 // Get view vector
                 float3 V = normalize(_WorldSpaceCameraPos - i.wPos);  // Point to the camera from the fragment
-                float3 R = reflect(-L, N);  // Reflect the light vector around the normal
-                float3 specularLight = saturate(dot(V, R));
-                specularLight = pow(specularLight, _Gloss);  // Glossiness, specular exponent
+                float3 H = normalize(L + V);  // Half vector
+                // float3 specularLight = saturate(dot(H, N));
+                float3 specularLight = saturate(dot(N, H)) * (lambert > 0);  // Remove the 'spotlight' effect when the light is behind the object
+                specularLight = pow(specularLight, specularExponent);  // Glossiness, specular exponent
+
 
                 return float4(specularLight.xxx, 1);
                 return float4(diffuseLight, 1.0);
