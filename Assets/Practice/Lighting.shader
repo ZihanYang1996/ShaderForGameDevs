@@ -58,6 +58,7 @@ Shader "Practice/Lighting"
                 // max(0.0, dot(N,L)) is the same
                 float lambert = saturate(dot(N,L));  
                 float3 diffuseLight = lambert * _LightColor0.rgb;
+                // return float4(diffuseLight, 1.0);
 
                 // Specular Exponent
                 float specularExponent = exp2(_Gloss * 6) + 2;  // For optimization, put it in C# scripta
@@ -79,10 +80,10 @@ Shader "Practice/Lighting"
                 float3 specularLight = saturate(dot(N, H)) * (lambert > 0);  // Remove the 'spotlight' effect when the light is behind the object
                 specularLight = pow(specularLight, specularExponent);  // Glossiness, specular exponent
 
-                specularLight = specularLight * _LightColor0.rgb;
+                specularLight = specularLight * _LightColor0.rgb;  // Apply light color
 
-                return float4(specularLight, 1);
-                return float4(diffuseLight, 1.0);
+                return float4(specularLight + diffuseLight, 1);
+                
             }
             ENDCG
         }
