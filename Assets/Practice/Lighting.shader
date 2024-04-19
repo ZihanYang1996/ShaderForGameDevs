@@ -80,7 +80,8 @@ Shader "Practice/Lighting"
                 float3 H = normalize(L + V);  // Half vector
                 // float3 specularLight = saturate(dot(H, N));
                 float3 specularLight = saturate(dot(N, H)) * (lambert > 0);  // Remove the 'spotlight' effect when the light is behind the object
-                specularLight = pow(specularLight, specularExponent);  // Glossiness, specular exponent
+                // specularLight = pow(specularLight, specularExponent);  // Glossiness, specular exponent
+                specularLight = pow(specularLight, specularExponent) * diffuseLight;  // A bad simulation of energy conservation
 
                 specularLight = specularLight * _LightColor0.rgb;  // Apply light color
 
