@@ -85,7 +85,7 @@ Shader "Practice/Fresnel"
 
                 specularLight = specularLight * _LightColor0.rgb;  // Apply light color
 
-                // Fresnel
+                // Fresnel effect
                 float fresnel = (1-dot(V, N)) * ((cos(_Time.y * 4)) * 0.5 + 0.5);
                 return float4(specularLight + diffuseLight * _Color + fresnel, 1);
                 
